@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <ul>
+      <li onclick="goto('/a')">/a</li>
+      <li onclick="goto('/b')">/b</li>
+      <li onclick="goto('/c')">/c</li>
+      <li onclick="forward()">forward</li>
+      <li onclick="back()">back</li>
+    </ul>
+  </body>
+
+  <script>
+    const globalHistory = window.history;
+    window.onpopstate = render;
+
+    function goto(path) {
+      globalHistory.pushState({}, '', path);
+    }
+
+    function forward() {
+      globalHistory.go(1);
+    }
+
+    function back() {
+      globalHistory.go(-1);
+    }
+
+    function render() {
+      root.innerHTML = window.location.pathname;
+    }
+  </script>
+</html>
