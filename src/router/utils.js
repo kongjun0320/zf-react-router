@@ -21,7 +21,7 @@ export function matchPath(path, pathname) {
   const [matcher, paramNames] = compilePath(path);
   let match = pathname.match(matcher);
 
-  if (!matcher) {
+  if (!match) {
     return null;
   }
   // 100
@@ -29,7 +29,7 @@ export function matchPath(path, pathname) {
   let params = paramNames.reduce((memo, paramName, index) => {
     memo[paramName] = captureGroups[index];
     return memo;
-  });
+  }, {});
 
   return { params };
 }

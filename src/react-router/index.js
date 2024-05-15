@@ -1,3 +1,2 @@
-import { Router, Routes, Route } from './lib/components';
-
-export { Router, Routes, Route };
+export * from './lib/components';
+export * from './lib/hooks';

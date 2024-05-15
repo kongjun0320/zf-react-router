@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import { Router, Routes, Route } from '../react-router';
+import { Router, Routes, Route, useNavigate } from '../react-router';
 import { createBrowserHistory, createHashHistory } from '../router';
 
 export { Routes, Route };
@@ -56,3 +56,16 @@ export function HashRouter({ children }) {
     />
   );
 }
+
+export const Link = function (props) {
+  const { to, state, ...rest } = props;
+  const navigate = useNavigate();
+
+  const handleClick = (event) => {
+    event.preventDefault();
+    navigate(to, state);
+  };
+
+  // eslint-disable-next-line jsx-a11y/anchor-has-content
+  return <a {...rest} onClick={handleClick} />;
+};

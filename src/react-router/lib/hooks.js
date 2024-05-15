@@ -1,5 +1,5 @@
-import { useContext } from 'react';
-import { LocationContext } from './context';
+import { useCallback, useContext } from 'react';
+import { LocationContext, NavigatorContext } from './context';
 import { matchRoutes } from '../../router';
 
 export function useLocation() {
@@ -20,4 +20,17 @@ export function useRoutes(routes) {
   //     return route.element;
   //   }
   // }
+}
+
+export function useNavigate() {
+  const { navigator } = useContext(NavigatorContext);
+
+  let navigate = useCallback(
+    (to, state) => {
+      navigator.push(to, state);
+    },
+    [navigator]
+  );
+
+  return navigate;
 }
