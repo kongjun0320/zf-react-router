@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRoutes } from './hooks';
+import { useRoutes, useOutlet } from './hooks';
 import { LocationContext, NavigatorContext } from './context';
 
 /**
@@ -33,3 +33,7 @@ function createRoutesFromChildren(children) {
 }
 
 export function Route() {}
+
+export function Outlet() {
+  return useOutlet();
+}
