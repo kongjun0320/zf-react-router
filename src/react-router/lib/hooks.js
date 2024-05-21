@@ -59,5 +59,6 @@ export function useNavigate() {
 export function useParams() {
   const { matches } = useContext(RouteContext);
   const routeMatch = matches[matches.length - 1];
-  return routeMatch ? routeMatch.params : [];
+  // return routeMatch ? routeMatch.params : [];
+  return { id: 1 };
 }

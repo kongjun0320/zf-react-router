@@ -21,7 +21,7 @@ function compilePath(path, end = true) {
 }
 
 export function matchPath({ path, end }, pathname) {
-  const [matcher, paramNames] = compilePath(path);
+  const [matcher, paramNames] = compilePath(path, end);
   let match = pathname.match(matcher);
 
   if (!match) {
@@ -43,6 +43,9 @@ function joinPaths(paths) {
   return paths.join('/').replace(/\/\/+/g, '/');
 }
 
+/**
+ * 打平所有的分支
+ */
 function flattenRoutes(
   routes,
   branches = [],
@@ -72,7 +75,10 @@ function flattenRoutes(
 }
 
 export function matchRouteBranch(branch, pathname) {
+  // pathname: /user/list
+  // [{'relativePath: '/user'}, {'relativePath: 'list'}]
   let { routesMeta } = branch;
+  // 已经匹配过的路径名
   let matchedPathname = '/';
   let matchedParams = {};
   let matches = [];
@@ -80,6 +86,7 @@ export function matchRouteBranch(branch, pathname) {
   for (let i = 0; i < routesMeta.length; i++) {
     const meta = routesMeta[i];
     const end = i === routesMeta.length - 1;
+    // 获取剩下的要匹配的路径名
     const remainingPathname =
       matchedPathname === '/'
         ? pathname

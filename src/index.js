@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link } from './react-router-dom';
-// import Home from './components/Home';
+import Home from './components/Home';
 import User from './components/User';
-// import Profile from './components/Profile';
-// import Post from './components/Post';
+import Profile from './components/Profile';
+import Post from './components/Post';
 import UserList from './components/UserList';
 import UserAdd from './components/UserAdd';
 import UserDetail from './components/UserDetail';

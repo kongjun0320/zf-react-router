@@ -17,6 +17,7 @@ export function Router({ children, location, navigator }) {
 
 export function Routes({ children }) {
   const routes = createRoutesFromChildren(children);
+  console.log('routes >>> ', routes);
   return useRoutes(routes);
 }
 
@@ -27,6 +28,9 @@ function createRoutesFromChildren(children) {
       path: child.props.path,
       element: child.props.element,
     };
+    if (child.props.children) {
+      route.children = createRoutesFromChildren(child.props.children);
+    }
     routes.push(route);
   });
   return routes;
@@ -35,5 +39,6 @@ function createRoutesFromChildren(children) {
 export function Route() {}
 
 export function Outlet() {
-  return useOutlet();
+  return 'outlet';
+  // return useOutlet();
 }

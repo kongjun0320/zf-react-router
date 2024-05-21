@@ -1,11 +1,9 @@
-import { Link, Outlet, useParams } from '../react-router-dom';
+import { Link, Outlet } from '../react-router-dom';
 import { userAPI } from '../utils';
 import { useEffect, useState } from 'react';
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
-  const params = useParams();
-  console.log('params >>> ', params);
 
   useEffect(() => {
     const _users = userAPI.list();
