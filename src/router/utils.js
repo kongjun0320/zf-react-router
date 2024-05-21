@@ -11,6 +11,11 @@ function compilePath(path, end = true) {
         return '/([^\\/]+)';
       });
 
+  if (path === '*') {
+    paramNames.push('*');
+    regexpSource += '(.*)$';
+  }
+
   if (end) {
     regexpSource += '$';
   }
@@ -42,6 +47,46 @@ export function matchPath({ path, end }, pathname) {
 function joinPaths(paths) {
   return paths.join('/').replace(/\/\/+/g, '/');
 }
+// 如果路径有 * 通配符，分数 - 2
+const splatPenalty = -2;
+const indexRouteValue = 2;
+const paramRegexp = /^:\w+$/;
+const dynamicSegmentValue = 3;
+const emptySegmentValue = 1;
+const staticSegmentValue = 10;
+
+const isSplat = (s) => s === '*';
+
+// path: /user/list
+function computeScore(path, index) {
+  // 先用 / 进行分隔路径 ['', 'user', 'list']
+  const segments = path.split('/');
+  // 3
+  let initialScope = segments.length;
+  if (segments.some(isSplat)) {
+    initialScope += splatPenalty; // -2
+  }
+  if (typeof index !== undefined) {
+    initialScope += indexRouteValue; // 2
+  }
+
+  return segments
+    .filter((s) => !isSplat(s))
+    .reduce((score, segment) => {
+      let currentScore = 0;
+      if (paramRegexp.test(segment)) {
+        currentScore += dynamicSegmentValue; // 3
+      } else {
+        if (segment === '') {
+          currentScore += emptySegmentValue; // 1
+        } else {
+          currentScore += staticSegmentValue; // 10
+        }
+      }
+      score += currentScore;
+      return score;
+    }, initialScope);
+}
 
 /**
  * 打平所有的分支
@@ -64,7 +109,11 @@ function flattenRoutes(
     if (route.children && route.children.length > 0) {
       flattenRoutes(route.children, branches, routesMeta, routePath);
     }
-    branches.push({ path: routePath, routesMeta });
+    branches.push({
+      path: routePath,
+      routesMeta,
+      score: computeScore(routePath, route.index),
+    });
   }
 
   routes.forEach((route, index) => {
@@ -109,11 +158,35 @@ export function matchRouteBranch(branch, pathname) {
 }
 
 /**
+ *
+ * @param {*} a {path: '/user/add', routesMeta: [{childrenIndex: 1}, {childrenIndex: 1}]}
+ * @param {*} b {path: '/user/list', routesMeta: [{childrenIndex: 1}, {childrenIndex: 0}]}
+ * @returns
+ */
+function compareIndexes(a, b) {
+  let sibling =
+    a.length === b.length && a.slice(0, -1).every((n, i) => n === b[i]);
+  return sibling ? a[a.length - 1] - b[a.length - 1] : 0;
+}
+
+function rankRouteBranches(branches) {
+  branches.sort((a, b) => {
+    return b.score !== a.score
+      ? b.score - a.score
+      : compareIndexes(
+          a.routesMeta.map((meta) => meta.childrenIndex),
+          b.routesMeta.map((meta) => meta.childrenIndex)
+        );
+  });
+}
+
+/**
  * 获取路由匹配的结果
  */
 export function matchRoutes(routes, location) {
   const { pathname } = location;
   let branches = flattenRoutes(routes);
+  rankRouteBranches(branches);
   console.log('branches >>> ', branches);
   let matches = null;
   for (let i = 0; matches === null && i < branches.length; i++) {

@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { createBrowserHistory, createHashHistory } from '../router';
-import { Router, useNavigate } from '../react-router';
+import { Router, useLocation, useNavigate } from '../react-router';
 export * from '../react-router';
 
 export function BrowserRouter({ children }) {
@@ -68,3 +68,26 @@ export const Link = function (props) {
   // eslint-disable-next-line jsx-a11y/anchor-has-content
   return <a {...rest} onClick={handleClick} />;
 };
+
+export function NavLink({
+  className: classNameProp,
+  style: styleProp,
+  to,
+  children,
+  end = false,
+  ...rest
+}) {
+  const { pathname } = useLocation();
+  // 计算当前 NavLink 中的 to 路径和地址栏中的路径是否匹配
+  const isActive =
+    pathname === to ||
+    (!end && pathname.startsWith(to) && pathname.charAt(to.length) === '/');
+  let className = classNameProp({ isActive });
+  let style = styleProp({ isActive });
+
+  return (
+    <Link className={className} style={style} to={to} {...rest}>
+      {children}
+    </Link>
+  );
+}

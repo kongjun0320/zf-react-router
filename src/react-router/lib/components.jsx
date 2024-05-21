@@ -1,5 +1,5 @@
-import React from 'react';
-import { useRoutes, useOutlet } from './hooks';
+import React, { useEffect } from 'react';
+import { useRoutes, useOutlet, useNavigate } from './hooks';
 import { LocationContext, NavigatorContext } from './context';
 
 /**
@@ -41,4 +41,14 @@ export function Route() {}
 export function Outlet() {
   return 'outlet';
   // return useOutlet();
+}
+
+export function Navigate({ to, state }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate(to, state);
+  }, []);
+
+  return null;
 }
